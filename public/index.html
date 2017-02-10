@@ -6,10 +6,38 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="stylesheets/style.css">
-  </head>
+    <script src="s.js"></script>
+    <script>
+    	function refresh() {
+			$.get("/check", function(data) {
+				console.log(data);
+				if(data!=='Empty'){
+					setTimeout(refresh, 3000);
+					playsound(data);
+				} else {
+					setTimeout(refresh, 3000);		
+				}
+			});
+    		
+    		// ...
+		}
 
+		// initial call, or just call refresh directly
+		//setTimeout(refresh, 5000);
+    </script>
+
+  </head>
+  
+
+  
   <body>
+  <audio id="mysound" controls preload="auto" >
+  <source id="mysrc" src="" type="audio/ogg">
+  </audio>
+  <br>
+  <button onclick="playsound()">click me</button>	
     <table>
       <tr>
         <td style= "width:30%;">
