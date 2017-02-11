@@ -14,6 +14,17 @@ var cfenv = require('cfenv');
 var app = express();
 
 var globalVar = "";
+var errorCode = "";
+var watson = require('watson-developer-cloud');
+
+var conversation = watson.conversation({
+  username: '4c2c5c86-0680-4a97-aab6-00421030af5e',
+  password: 'SWU0veejaB7D',
+  version: 'v1',
+  version_date: '2016-09-20'
+});
+
+// Replace with the context obtained from the initial request
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
@@ -28,21 +39,12 @@ var text_to_speech = new TextToSpeechV1({
 });
 
 var bodyParser = require('body-parser');
-var options = {
-	inflate: true,
-	limit: '100kb',
-	type: 'application/octet-stream'
-};
-app.use(bodyParser.raw(options));
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
 app.get("/syn", function(req, res) {
-	// req.body is a Buffer object
-
-	/*var params = {
-	    text: req.param('txt'),
-	    voice: 'en-US_AllisonVoice',
-	    accept: 'audio/wav'
-	};*/
 	globalVar = req.param('txt');
+	errorCode = req.param('cod');
+
 	res.send('DONE');
 
 });
@@ -62,33 +64,29 @@ app.get("/check", function(req, res) {
 		res.writeHead(200, {
 			'Cache-Control': 'no-cache'
 		});
-		res.end(globalVar);
-
-		// req.body is a Buffer object
-		/*var params = {
-		    text: globalVar,
-		    voice: 'en-US_AllisonVoice',
-		    accept: 'audio/wav'
-		};
-		text_to_speech.synthesize(params).on('error', function(error) {
-		    console.log('Error:', error);
-		}).pipe(res); */
-
+		res.end(globalVar+":"+errorCode);
+		
 		globalVar = "";
 	}
 
 });
 
 
+app.post("/conv", function(req, res) {
+conversation.message({
+  workspace_id: 'd62c761b-c39a-4fef-9832-d93378f64332',
+  input: {'text': req.body.input},
+  context: req.body.context
+},  function(err, response) {
+  if (err)
+    console.log('error:', err);
+  else
+    res.json(response);
+});
+});
 app.get("/sync2", function(req, res) {
 	
 		console.log('else');
-		/*res.writeHead(200, {
-			'Cache-Control': 'no-cache'
-		});
-		res.end(globalVar);*/
-
-		// req.body is a Buffer object
 		var params = {
 		    text: req.param('txt'),
 		    voice: 'en-US_AllisonVoice',
@@ -97,8 +95,6 @@ app.get("/sync2", function(req, res) {
 		text_to_speech.synthesize(params).on('error', function(error) {
 		    console.log('Error:', error);
 		}).pipe(res); 
-
-	
 
 });
 

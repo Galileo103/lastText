@@ -4,18 +4,31 @@
   <head>
     <title>NodeJS Starter Application</title>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   
     <script src="s.js"></script>
+   
+    
+ 
     <script>
     	function refresh() {
 			$.get("/check", function(data) {
 				console.log(data);
+				
 				if(data!=='Empty'){
 					setTimeout(refresh, 3000);
-					playsound(data);
+					var splitted = data.split(":");
+					var thetext = splitted[0].substring(1,splitted[0].length-1);
+					$("#chatbox").append("<div class = 'well well-sm' style='background-color: #FF3300'>" +thetext+ "</div>");
+					
+					playsound(splitted[0]);	
+					console.log(splitted);
+					console.log(splitted[1].substring(1,splitted[1].length-1));
+					sendcod(splitted[1].substring(1,splitted[1].length-1));
 				} else {
 					setTimeout(refresh, 3000);		
 				}
@@ -24,8 +37,6 @@
     		// ...
 		}
 
-		// initial call, or just call refresh directly
-		//setTimeout(refresh, 5000);
     </script>
 
   </head>
@@ -33,22 +44,31 @@
 
   
   <body>
-  <audio id="mysound" controls preload="auto" >
+  
+  
+<div class="container">
+  <h2>Chat Bot</h2>
+  <div class="well" id ="chatbox">
+	
+  </div>
+  
+  
+  <form>
+    <div class="form-group">
+      <label for="comment">TELL ME WHAT YOU WANT ..</label>
+      <textarea class="form-control" rows="5" id="mycomment"></textarea>
+    </div>
+  </form>
+  <br>
+  <button type="button" class="btn btn-success" onclick="wellappend();">SEND</button>
+</div>
+
+  
+  <br>
+  <audio id="mysound" controls preload="auto" hidden >
   <source id="mysrc" src="" type="audio/ogg">
   </audio>
-  <br>
-  <button onclick="playsound()">click me</button>	
-    <table>
-      <tr>
-        <td style= "width:30%;">
-          <img class = "newappIcon" src="images/newapp-icon.png">
-        </td>
-        <td>
-          <h1 id="message">Hello World!</h1>
-          <p class='description'></p> Thanks for creating a <span class = "blue">NodeJS Starter Application</span>.
-        </td>
-      </tr>
-    </table>
+  
   </body>
 
 </html>
